@@ -1,0 +1,5 @@
+# ignore info in build
+build/*
+bin/*
+#aside from SDL2.dll
+!bin/SDL2.dll
