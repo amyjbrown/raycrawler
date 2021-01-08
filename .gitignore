@@ -1,5 +1,7 @@
 # ignore info in build
-build/*
-bin/*
+build/
+build
+bin/
+bin
 #aside from SDL2.dll
 !bin/SDL2.dll

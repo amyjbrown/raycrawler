@@ -2,14 +2,31 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: cl.exe build active file",
+            "label": "C/C++: cl.exe build project",
             "command": "cl.exe",
             "args": [
                 "/Zi",
                 "/EHsc",
+                "/W3",
+                // uses \include for include files
+                "/I",
+                "${workspaceFolder}\\include",
+                // Create a multithreaded debug file
+                // See https://hg.libsdl.org/SDL/raw-file/e52d96ea04fc/VisualC.html
+                // "/MTd",
+                // Output file to \bin\raytrace.exe
                 "/Fe:",
                 "${workspaceFolder}\\bin\\raytrace.exe",
-                "${file}"
+                // Build all files in src
+                "${workspaceFolder}\\src\\*",
+                //Link local libraries of SDL2
+                // Given that SDL2.dll exists in bin, it *should* link, but we'll see
+                "${workspaceFolder}\\lib\\SDL2main.lib",
+                "${workspaceFolder}\\lib\\SDL2.lib",
+                "${workspaceFolder}\\lib\\SDL2test.lib",
+                "Shell32.lib",
+                //Add linker option to make the it be legal with a main() function
+                "/link", "/SUBSYSTEM:CONSOLE"
             ],
             "options": {
                 "cwd": "${workspaceFolder}\\build"
