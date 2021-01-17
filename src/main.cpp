@@ -83,8 +83,6 @@ SDL_Renderer* init(){
     }
     // Clear the screen to PureGreen
     //SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    //SDL_RenderFillRect(renderer, nullptr);
-    //SDL_RenderPresent(renderer);
     return renderer;
 }
 
@@ -102,22 +100,11 @@ int main( int argc, char* argv[] )
     
     SDL_Texture* texture = SDL_CreateTexture(
       renderer,
-      SDL_PIXELFORMAT_ARGB8888,
+      SDL_PIXELFORMAT_RGBA8888,
       SDL_TEXTUREACCESS_STREAMING,
       screenWidth, screenHeight
     );
-
-    // Player Position (x,y)
-    double posX = 22, posY = 12;
-    // Player Direction Vector
-    double dirX = -1, diyY = 0;
-    // the 2d raycaster version of camera plane, here camera line
-    double planeX = 0, planeY = 0.66;
-
-    double time = 0; // current time frame
-    double oldTime = 0;
  
-    printf("Hello world, we done!\n");
     // it goes (y, x) instead of x, y
     Uint32* pixel_array = (Uint32*) malloc(sizeof(Uint32) * screenWidth * screenHeight);
     memset(pixel_array, 0, sizeof(Uint32) * screenHeight * screenWidth);
@@ -131,16 +118,62 @@ int main( int argc, char* argv[] )
           shutdown();
         }
       }
-      // Update screen texture
-      for(Uint32 y = 0; y < screenHeight; y++){
-        for(Uint32 x = 0; x < screenWidth; x++){
-          blit_pixel(pixel_array,
-            x, y,
-            Color(0x77, 0x77, 0x77));
+    // Player Position (x,y)
+    double posX = 22, posY = 12;
+    // Player Direction Vector
+    double dirX = -1, dirY = 0;
+    // the 2d raycaster version of camera plane, here camera line
+    double planeX = 0, planeY = 0.66;
+
+    double time = 0; // current time frame
+    double oldTime = 0;
+
+
+    for(int x = 0; x < screenWidth; x++) {
+        //calculate ray position and direction
+        double cameraX = 2 * x / double(screenWidth) - 1; //x-coordinate in camera space
+        double rayDirX = dirX + planeX * cameraX;
+        double rayDirY = dirY + planeY * cameraX;
+
+        int mapX=int(posX), mapY=int(posY);
+        double sideDistX, sideDistY;
+        double deltaDistX = std::abs(1 / rayDirX);
+        double deltaDistY = std::abs(1 / rayDirY);
+        double perpWallDist;
+        // what dirction to step in: x or y (either +1 or -1)
+        int stepX, stepY;
+        int hit = 0; // was theer a wall hit
+        int side; // was a NS EW wall hit 
+
+        if (rayDirX < 0) {
+            stepX = -1;
+            sideDistX = (posX - mapX) * deltaDistX;
+        } else {
+            stepX = 1;
+            sideDistX = (mapX + 1.0 - posX) * deltaDistX;
         }
-      }
+        if (rayDirY < 0) {
+            stepY = -1;
+            sideDistY = (posY - mapY) * deltaDistY;
+        } else {
+            stepY = 1;
+            sideDistY = (mapY + 1.0 - posY) * deltaDistY;
+        } 
+        //DDA algorithim
+        while (hit==0) {
+            // jump to next map square, OR in x direaction or Y
+            if (sideDistX < sideDistY) {
+                sideDistX 
+            }
+        }
+    }
+
       // write texture to renderer, update screen, and render update
       // SDL_RenderPresent(renderer);
+    SDL_UpdateTexture(texture, NULL, pixel_array, 640 * sizeof (Uint32));
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
 
     }
 
